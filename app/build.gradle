@@ -37,6 +37,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.+'
-    //compile "org.codehaus.groovy:groovy:2.4.12:grooid"
+    compile 'com.annimon:stream:1.1.7'
     testCompile 'junit:junit:4.12'
 }

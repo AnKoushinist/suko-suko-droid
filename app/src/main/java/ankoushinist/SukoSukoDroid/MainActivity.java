@@ -1,5 +1,6 @@
 package ankoushinist.SukoSukoDroid;
 
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,11 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+    static final String URL_LOGIN = "https://accounts.google.com/ServiceLogin";
+    static final String URL_MOVIE = "https://www.youtube.com/watch?v={0}";
+    static final String URL_CHANNEL = "https://www.youtube.com/channel/{0}/videos";
+    static final String USER_AGENT = "https://www.youtube.com/channel/{0}/videos";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
     public static class SukoSukoWorkerFragment extends FuckingFragment{
         WebView wv;
         LinearLayout logContainer;
+        final Handler handler=new Handler();
+        List<Runnable> tasks=new ArrayList<>();
+        int running=0;
 
         @Nullable
         @Override
@@ -70,7 +83,34 @@ public class MainActivity extends AppCompatActivity {
             super.onResume();
             wv=findViewById(R.id.sukosukoDisplay);
             logContainer=findViewById(R.id.sukosukoTextViewContainer);
+            handler.post(this::start);
+            tasks.add(()->{
+                createLogText("ログイン中",true);
+                wv.loadUrl(URL_LOGIN);
+            });
+        }
 
+        void start(){
+            running=0;
+            tasks.get(0).run();
+            wv.getSettings().setUserAgentString("");
+            wv.setWebViewClient(new WebViewClient(){
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    running++;
+                    if(tasks.size()>running)
+                        tasks.get(running).run();
+                }
+            });
+        }
+
+        TextView createLogText(CharSequence str,boolean append){
+            TextView tv= (TextView) getActivity().getLayoutInflater().inflate(R.layout.line_sukosuko,logContainer,false);
+            tv.setText(str);
+            if(append)
+                logContainer.addView(tv);
+            return tv;
         }
     }
 
