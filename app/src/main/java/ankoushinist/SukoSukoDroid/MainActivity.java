@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         void start(){
             running=0;
             tasks.get(0).run();
-            wv.getSettings().setUserAgentString("");
+            wv.getSettings().setUserAgentString("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:55.0) Gecko/20100101 Firefox/55.0");
             wv.setWebViewClient(new WebViewClient(){
                 @Override
                 public void onPageFinished(WebView view, String url) {
